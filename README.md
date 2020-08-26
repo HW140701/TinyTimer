@@ -66,11 +66,6 @@ int main()
 
 using namespace std;
 
-void Print()
-{
-	std::cout << "定时器全局函数Print执行" << std::endl;
-}
-
 int main()
 {
 	TinyTimer::ptr tinyTimer = std::make_shared<TinyTimer>();
