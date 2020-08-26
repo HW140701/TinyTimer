@@ -1,16 +1,4 @@
-# TinyTimer
-TinyTimer是一个只有单个头文件的简单的支持C++11特性的定时器，
-该类包括以下特征：
-
-- 支持同步/异步执行定时器任务；
-- 支持中途中断定时器任务，可参考Windows Api的SetTimer和KillTimer;
-
-# 代码演示
-## 1 静态/全局作为任务函数
-
-
-'''
-#include <iostream>
+﻿#include <iostream>
 #include "conio.h"
 
 #include "TinyTimer.hpp"
@@ -62,32 +50,26 @@ int main()
 	tinyTimer->KillTimer();
 
 	// 循环执行静态/全局函数，按Q键杀死定时器
-	//int a = 0;
-	//while (true)
-	//{
-	//	// 在此处填入需要循环的代码
-	//	if (a == 0)
-	//	{
-	//		tinyTimer->AsyncLoopExecute(1, Print1);
-	//	}
+	int a = 0;
+	while (true)
+	{
+		// 在此处填入需要循环的代码
+		if (a == 0)
+		{
+			tinyTimer->AsyncLoopExecute(1, Print);
+		}
 
-	//	if (_kbhit()) // 如果有按键被按下
-	//	{
-	//		if (_getch() == 'q') //如果按下了q键则跳出循环
-	//		{
-	//			tinyTimer->KillTimer();
-	//			break;
-	//		}
+		if (_kbhit()) // 如果有按键被按下
+		{
+			if (_getch() == 'q') //如果按下了q键则跳出循环
+			{
+				tinyTimer->KillTimer();
+				break;
+			}
 
-	//	}
-	//}
+		}
+	}
 
 	getchar();
 	return 0;
 }
-'''
-
-## 2 Lambda表达式作为任务函数
-
-## 3 类成员函数做为任务函数
-
