@@ -61,23 +61,25 @@ public:
 				([this, interval, task]() {
 				while (!m_bTryExpired)
 				{
-					std::this_thread::sleep_for(std::chrono::milliseconds(interval));
-
-					task();
-
-					m_LoopCount++;
-
-					if (!m_bLoopExecute)
+					std::unique_lock<std::mutex> lk(m_ThreadMutex);
+					if (m_ExpiredConditionVar.wait_for(lk, std::chrono::milliseconds(interval), [this]() {return m_bTryExpired == true; }))
 					{
 						break;
 					}
+					else
+					{
+						task();
+
+						m_LoopCount++;
+
+						if (!m_bLoopExecute)
+						{
+							break;
+						}
+					}
 				}
-				{
-					std::lock_guard<std::mutex> locker(m_ThreadMutex);
-					m_bExpired = true;
-					m_bTryExpired = false;
-					m_ExpiredConditionVar.notify_one();
-				}
+				m_bExpired = true;
+				m_bTryExpired = false;
 			})
 			);
 			m_Thread->detach();
@@ -107,13 +109,8 @@ public:
 		}
 
 		m_bTryExpired = true;
-		{
-			std::unique_lock<std::mutex> locker(m_ThreadMutex);
-			m_ExpiredConditionVar.wait(locker, [this] {return m_bExpired == true; });
-			if (m_bExpired == true) {
-				m_bTryExpired = false;
-			}
-		}
+
+		m_ExpiredConditionVar.notify_one();
 	}
 
 	//!
